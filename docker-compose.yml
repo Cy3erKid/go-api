@@ -1,0 +1,73 @@
+version: '3.5'
+
+services:
+  api:
+    image: go-api
+    container_name: go-api
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+    volumes:
+      - ./api:/var/www/api
+    depends_on:
+      - postgresdb
+    networks:
+      - api_network
+    ports:
+      - 8080:8080
+  
+  frontend:
+    image: nextjs-frontend
+    container_name: frontend-nextjs
+    volumes:
+      - ./frontend:/var/www/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    
+  postgresdb:
+    image: postgres:13.4-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: P@ssw0rdAdm!n
+      POSTGRES_DB: devopdb
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - api_network
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports: 
+      - 8081:8080
+    depends_on: 
+      - postgresdb
+    networks: 
+      - api_network
+
+  nginx:
+    image: nginx-alpine
+    container_name: nginx_server
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/
+      - ./api/:/var/www/api
+    networks:
+      - web-networks
+      - api_network
+
+
+networks:
+  web-networks:
+    driver: bridge
+  api_network:
+    driver: bridge
