@@ -8,7 +8,7 @@ import (
 func InitUserRoutes(route *gin.RouterGroup) {
 
 	routerGroup := route.Group("/users")
-	routerGroup.GET("/", usercontroller.GetAll)
+	routerGroup.GET("/all", usercontroller.GetAll)
 	routerGroup.POST("/register", usercontroller.Register)
 	routerGroup.POST("/login", usercontroller.Login)
 	routerGroup.GET("/:id", usercontroller.GetUserById)

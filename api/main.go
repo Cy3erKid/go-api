@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"example.com/goapi-v1/configs"
 	"example.com/goapi-v1/routes"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -22,6 +23,7 @@ func SetupRouter() *gin.Engine {
 	gin.SetMode(os.Getenv(("GIN_MODE")))
 
 	// connect db
+	configs.Connection()
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -32,7 +34,7 @@ func SetupRouter() *gin.Engine {
 		AllowCredentials: true,
 	}))
 
-	apiV1 := router.Group("/api/v1")
+	apiV1 := router.Group("/v1")
 	routes.InitRoutes(apiV1)
 	routes.InitUserRoutes(apiV1)
 

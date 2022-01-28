@@ -5,6 +5,9 @@ WORKDIR /var/www/api
 COPY go.mod ./
 COPY go.sum ./
 RUN go get -v github.com/cosmtrek/air
+
+RUN go get -u gorm.io/gorm
+RUN go get -u gorm.io/driver/postgres
 RUN go mod download
 
 COPY *.go ./

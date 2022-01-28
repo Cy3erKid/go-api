@@ -4,9 +4,10 @@ services:
   api:
     image: go-api
     container_name: go-api
+    restart: always
     build:
-      context: .
-      dockerfile: ./api/Dockerfile
+      context: ./api
+      dockerfile: Dockerfile
     volumes:
       - ./api:/var/www/api
     depends_on:
@@ -14,21 +15,26 @@ services:
     networks:
       - api_network
     ports:
-      - 8080:8080
+      - 3001:3001
   
   frontend:
-    image: nextjs-frontend
+    image: nextjs
     container_name: frontend-nextjs
+    build:
+      context: ./frontend
     volumes:
       - ./frontend:/var/www/app
       - /app/node_modules
       - /app/.next
     ports:
-      - "3000:3000"
+      - "3002:3002"
+    networks:
+      - web-networks
     
   postgresdb:
     image: postgres:13.4-alpine
     container_name: postgres-db
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: P@ssw0rdAdm!n
@@ -50,17 +56,18 @@ services:
       - postgresdb
     networks: 
       - api_network
+      - web-networks
 
   nginx:
-    image: nginx-alpine
+    image: nginx:1.21.5-alpine
     container_name: nginx_server
     restart: unless-stopped
     tty: true
     ports:
       - "80:80"
     volumes:
-      - ./nginx:/etc/nginx/conf.d/
-      - ./api/:/var/www/api
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      # - ./api/:/var/www/api
     networks:
       - web-networks
       - api_network
