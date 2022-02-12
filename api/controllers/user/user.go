@@ -5,6 +5,7 @@ import (
 
 	"example.com/goapi-v1/configs"
 	"example.com/goapi-v1/models"
+	"example.com/goapi-v1/response"
 	"example.com/goapi-v1/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -58,17 +59,25 @@ func Login(c *gin.Context) {
 
 func GetUserById(c *gin.Context) {
 	id := c.Param("id")
-	var user models.User
+	var user []models.User
 	result := configs.DB.First(&user, id)
+	totalRow := result.RowsAffected
 	if result.RowsAffected < 1 {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "User Not found.",
 		})
 		return
 	}
-
+	data := response.UserResponse{
+		PageIndex:   1,
+		PageSize:    10,
+		SortBy:      "id",
+		SortType:    "desc",
+		RecordTotal: uint(totalRow),
+		Data:        user,
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"data": user,
+		"data": data,
 	})
 }
 
@@ -77,10 +86,14 @@ func SearchByUserName(c *gin.Context) {
 
 	var users []models.User
 	result := configs.DB.Where("full_name LIKE ?", "%"+name+"%").Scopes(utils.Paginate(c)).Find(&users)
+	totalRow := result.RowsAffected
 
-	if result.Error != nil {
+	if result.Error == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": result.Error,
+			"results": response.ErrorResponse{
+				Error:   true,
+				Message: "Something went wrong..",
+			},
 		})
 		return
 	}
@@ -92,7 +105,16 @@ func SearchByUserName(c *gin.Context) {
 		return
 	}
 
+	data := response.UserResponse{
+		PageIndex:   1,
+		PageSize:    10,
+		SortBy:      "id",
+		SortType:    "desc",
+		RecordTotal: uint(totalRow),
+		Data:        users,
+	}
+
 	c.JSON(200, gin.H{
-		"data": users,
+		"results": data,
 	})
 }

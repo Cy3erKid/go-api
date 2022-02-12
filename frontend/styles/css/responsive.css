@@ -1,0 +1,28 @@
+@media (max-width: 475px) {
+    .nav-menu>.nav-link {
+        padding-left: 1rem;
+    }
+
+    .section-banner {
+        margin-top: 2rem;
+    }
+
+    .img-nft {
+        max-width: 350px;
+        max-height: 100%;
+        position: fixed;
+        border: none;
+        right: -40%;
+        top: 8%;
+        background: transparent;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .img-nft {
+        max-width: 400px;
+        max-height: 100%;
+        position: fixed;
+        right: 0;
+    }
+}

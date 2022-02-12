@@ -15,6 +15,20 @@ func Paginate(c *gin.Context) func(db *gorm.DB) *gorm.DB {
 		}
 
 		pageSize, _ := strconv.Atoi(c.Query("page_size"))
+		sort := c.Query("sort")
+		var sortWithDirection string
+
+		if sort != "" {
+			direction := c.Query("sortDesc")
+			if direction != "" {
+				if direction == "true" {
+					sortWithDirection = sort + " desc"
+				} else if direction == "false" {
+					sortWithDirection = sort + " asc"
+				}
+			}
+		}
+
 		switch {
 		case pageSize > 100:
 			pageSize = 100
@@ -23,6 +37,6 @@ func Paginate(c *gin.Context) func(db *gorm.DB) *gorm.DB {
 		}
 
 		offset := (page - 1) * pageSize
-		return db.Offset(offset).Limit(pageSize)
+		return db.Statement.Order(sortWithDirection).Offset(offset).Limit(pageSize)
 	}
 }

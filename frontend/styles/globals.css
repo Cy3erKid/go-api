@@ -2,7 +2,8 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system,'IBM Plex Sans',BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+  background-color: #fff;
+  font-family: -apple-system,'Inter','IBM Plex Sans',BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 

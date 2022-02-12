@@ -68,6 +68,9 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       # - ./api/:/var/www/api
+    depends_on:
+      - frontend
+      - api
     networks:
       - web-networks
       - api_network
