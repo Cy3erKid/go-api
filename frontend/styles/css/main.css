@@ -69,6 +69,7 @@
 .nft-card{
     width: 18rem;
     border: none;
+    margin-bottom: 2rem;
     background-color: transparent;
 }
 .nft-card > .card-body{
@@ -85,8 +86,24 @@
     top: 30px;
 }
 .nft-card > img.card-img-top{
-    max-height: 230px;
+    max-height: 270px;
 }
 .ntf-series,.nft-top-bid{
     font-size: 0.8rem;
+}
+.sponsors{
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+}
+.sponsor-logo{
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-us,.contact,.nft,.social-media,.footer-logo{
+    margin-top: 2.5rem;
+}
+.logo-currency{
+    display: inline !important;
 }

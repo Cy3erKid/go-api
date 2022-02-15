@@ -1,7 +1,7 @@
 const CardNFT = (props: any) => {
   return (
     <>
-      <div className={ props.className + ' card nft-card' }>
+      <div className={ (props.className) ? props.className+ ' card nft-card' : `card nft-card` }>
         <img src={ props.imgSrc } className="card-img-top" alt="NFT Card." />
         <div className={`card-body ` + props.bg }>
           <div className="d-flex justify-content-between">
@@ -17,7 +17,7 @@ const CardNFT = (props: any) => {
             <h5 className={ props.color.nftPrice }>
                 {
                     (props.logo !== "" && props.logo !== undefined) ? 
-                    <img src={props.logo} alt={ props.name } /> 
+                    <img src={props.logo} alt={ props.name } className="logo-currency" /> 
                     : ''
                 }
                 
