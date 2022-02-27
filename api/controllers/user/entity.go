@@ -5,3 +5,8 @@ type UserEntity struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type InputLogin struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

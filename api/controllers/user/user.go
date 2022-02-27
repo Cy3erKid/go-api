@@ -2,12 +2,16 @@ package usercontroller
 
 import (
 	"net/http"
+	"os"
+	"time"
 
 	"example.com/goapi-v1/configs"
 	"example.com/goapi-v1/models"
 	"example.com/goapi-v1/response"
 	"example.com/goapi-v1/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
+	"github.com/matthewhartstonge/argon2"
 )
 
 func GetAll(c *gin.Context) {
@@ -52,8 +56,52 @@ func Register(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
+	var userInput InputLogin
+
+	if err := c.ShouldBind(&userInput); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user := models.User{
+		Email:    userInput.Email,
+		Password: userInput.Password,
+	}
+
+	userAccount := configs.DB.Where("email = ?", userInput.Email).Find(&user)
+	if userAccount.RowsAffected < 1 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "User dose not exits",
+		})
+		return
+	}
+
+	// compare password hash with argon2
+	ok, _ := argon2.VerifyEncoded([]byte(userInput.Password), []byte(user.Password))
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Password not match.",
+		})
+		return
+	}
+
+	// create jwt
+	generateClaim := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id":   user.ID,
+		"expire_at": time.Now().Add(time.Hour).Unix(), // 1 hour
+	})
+	secretKey := os.Getenv("JWT_SECRET")
+	accessToken, er := generateClaim.SignedString([]byte(secretKey))
+
+	if er != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Something went wrong.",
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"data": "Login",
+		"message":      "Login Success",
+		"access_token": accessToken,
 	})
 }
 
@@ -78,6 +126,13 @@ func GetUserById(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"data": data,
+	})
+}
+
+func GetProfile(c *gin.Context) {
+	user := c.MustGet("user")
+	c.JSON(http.StatusOK, gin.H{
+		"data": user,
 	})
 }
 
